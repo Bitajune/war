@@ -1,6 +1,6 @@
 # War
 
-#### _[You can access the game here](https://www.google.com)_
+#### _[You can access the game here](https://Bitajune.github.io/War)_
 
 ## Game Walkthrough
 
