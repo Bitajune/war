@@ -217,16 +217,15 @@ let playerResults,
   playerScore,
   cpuScore,
   currentPlayerCard,
+  playerWin = 0,
+  cpuWin = 0,
   currentCpuCard;
-
-const playerCards = {
-  value: [],
-  image: []
-};
-const cpuCards = {
-  value: [],
-  image: []
-};
+let pCard;
+let cCard;
+let playerCards = [];
+let cpuCards = [];
+let playersWarCards = [];
+let cpuWarCards = [];
 
 /*--- cached element references ---*/
 const pScore = document.querySelector(".leftScore");
@@ -243,17 +242,137 @@ const cTurnsWon = document.querySelector(".rightTurnsWon");
 
 const button = document.querySelector(".draw");
 
-/*----- event listeners -----*/
-// document.querySelector("button").addEventListener("click");
+const pImg = document.querySelector(".player-card");
 
-/*----- functions -----*/
-//here you write your javascript functions. all the logic of the game. run init first!! MOST END WITH RENDER DONT FORGET
+const cImg = document.querySelector(".cpu-card");
+
+const flipCards = document.querySelectorAll(".flip-card-inner");
+
+/*--- event listeners ---*/
+document.querySelector("button").addEventListener("click", deal);
+
+/*--- functions ---*/
 initialize();
 
-function initialize() {}
+function initialize() {
+  const gameDeck = [...shuffleCards(deck)];
+  playerCards = [...gameDeck.splice(0, Math.ceil(gameDeck.length / 2))];
+  cpuCards = [...gameDeck];
+  keepScore();
+}
 
-// document.querySelector("button").addEventListener("click", draw(){
-//     document.getElementByClassName("face").setAttribute("src", changingImages) = "Hello World";
-//   });
+function render() {
+  pImg.src = pCard.image;
+  cImg.src = cCard.image;
+  flipCard(180, flipCards);
+}
 
-//   var changingImages = "./assets/cards/Clubs/8.png"
+function keepScore() {
+  pCardsLeft.innerHTML = `Cards Left: ${playerCards.length}`;
+  cCardsLeft.innerHTML = `Cards Left: ${cpuCards.length}`;
+  pTurnsWon.innerHTML = `Turns Won: ${playerWin}`;
+  cTurnsWon.innerHTML = `Turns Won: ${cpuWin}`;
+}
+
+function shuffleCards(gameDeck) {
+  var j, x, i;
+  for (i = gameDeck.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    x = gameDeck[i];
+    gameDeck[i] = gameDeck[j];
+    gameDeck[j] = x;
+  }
+  return gameDeck;
+}
+
+function deal() {
+  this.disabled = true;
+  pCard = playerCards.pop();
+  cCard = cpuCards.pop();
+  render();
+  checkForWin(pCard, cCard);
+  setTimeout(() => {
+    this.disabled = false;
+    flipCard(0, flipCards);
+  }, 1000);
+}
+
+function flipCard(degNum, cards) {
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].style.transform = `rotateY(${degNum}deg)`;
+  }
+}
+
+function checkForWin(pCard, cCard) {
+  if (pCard.value > cCard.value) {
+    winRound();
+  } else if (pCard.value < cCard.value) {
+    loseRound();
+  } else if (pCard.value === cCard.value) {
+    setTimeout(() => tieWar(), 1000);
+  }
+}
+
+function winRound() {
+  playerCards.unshift(
+    pCard,
+    cCard,
+    ...playersWarCards.splice(0),
+    ...cpuWarCards.splice(0)
+  );
+  playerWin += 1;
+  render();
+  keepScore();
+}
+
+function loseRound() {
+  cpuCards.unshift(
+    pCard,
+    cCard,
+    ...playersWarCards.splice(0),
+    ...cpuWarCards.splice(0)
+  );
+  cpuWin += 1;
+  render();
+  keepScore();
+}
+
+function tieWar() {
+  modal();
+  for (let i = 0; i < 3; i++) {
+    playersWarCards.push(playerCards.pop());
+    cpuWarCards.push(cpuCards.pop());
+  }
+  setTimeout(() => tieCardsFlip(), 3000);
+  render();
+  checkForWin(pCard, cCard);
+}
+
+function tieCardsFlip(){
+  pCard = playerCards.pop();
+  cCard = cpuCards.pop();
+}
+
+function gameWon() {
+  if (playerCards.length === 52) {
+    modal();
+  } else if (cpuCards.length === 52) {
+    modal();
+  }
+}
+
+//------MODAL------
+function modal() {
+  var modal = document.getElementById("myModal");
+  var span = document.getElementsByClassName("close")[0];
+  modal.style.display = "block";
+  span.onclick = function() {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+}
