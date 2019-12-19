@@ -1,5 +1,4 @@
 /*--- constants ---*/
-//these are constant in your game. dont change
 const deck = [
   {
     value: 2,
@@ -222,10 +221,12 @@ let playerResults,
   currentCpuCard;
 let pCard;
 let cCard;
+let modalMessage;
 let playerCards = [];
 let cpuCards = [];
 let playersWarCards = [];
 let cpuWarCards = [];
+let whipLash = new Audio("./assets/8whip.wav");
 
 /*--- cached element references ---*/
 const pScore = document.querySelector(".leftScore");
@@ -255,6 +256,7 @@ document.querySelector("button").addEventListener("click", deal);
 initialize();
 
 function initialize() {
+  modalMessage = "It's War";
   const gameDeck = [...shuffleCards(deck)];
   playerCards = [...gameDeck.splice(0, Math.ceil(gameDeck.length / 2))];
   cpuCards = [...gameDeck];
@@ -286,6 +288,7 @@ function shuffleCards(gameDeck) {
 }
 
 function deal() {
+  whipLash.play();
   this.disabled = true;
   pCard = playerCards.pop();
   cCard = cpuCards.pop();
@@ -338,25 +341,31 @@ function loseRound() {
 }
 
 function tieWar() {
+  modalMessage = "It's War!";
   modal();
   for (let i = 0; i < 3; i++) {
     playersWarCards.push(playerCards.pop());
     cpuWarCards.push(cpuCards.pop());
   }
-  setTimeout(() => tieCardsFlip(), 3000);
+  setTimeout(() => tieCardsFlip(), 2000);
+  setTimeout(() => {
+    flipCard(0, flipCards);
+  }, 2000);
   render();
   checkForWin(pCard, cCard);
 }
 
-function tieCardsFlip(){
+function tieCardsFlip() {
   pCard = playerCards.pop();
   cCard = cpuCards.pop();
 }
 
 function gameWon() {
   if (playerCards.length === 52) {
+    modalMessage = "Yee Haw! You won!";
     modal();
   } else if (cpuCards.length === 52) {
+    modalMessage = "Better luck next time, cowboy!";
     modal();
   }
 }
@@ -365,7 +374,9 @@ function gameWon() {
 function modal() {
   var modal = document.getElementById("myModal");
   var span = document.getElementsByClassName("close")[0];
+  const warMessage = document.querySelector(".war");
   modal.style.display = "block";
+  warMessage.innerText = modalMessage;
   span.onclick = function() {
     modal.style.display = "none";
   };
