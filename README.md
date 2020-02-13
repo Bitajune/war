@@ -1,6 +1,6 @@
 # War
 
-#### _[You can access the game here](https://Bitajune.github.io/War)_
+#### _[You can access the game here](https://Bitajune.github.io/war)_
 
 ## Game Walkthrough
 
@@ -22,3 +22,11 @@
 ##### _If both flipped cards have the same value, place three cards face down and flip the fourth card. Winner takes all cards._
 
 ![](assets/War.jpg)
+
+### Technical Skills Used:
+
+- HTML
+- CSS
+- JAVASCRIPT
+
+##### _Original artwork created exclusively for use on this app._
